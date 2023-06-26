@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUsersTable extends Migration
+class CreateTreatmentTypesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,13 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('treatment_types', function (Blueprint $table) {
             $table->id();
-            $table->string('name',100);
-            $table->string('email',100);
-            $table->string('password',100);
-            $table->tinyInteger('role');
-            $table->timestamp('email_verified_at')->nullable();
-            $table->rememberToken();
+            $table->string('type', 100)->comment('種類');
+            $table->integer('price')->comment('値段');
+            $table->integer('frequency')->comment('回数');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -32,6 +30,6 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('treatment_types');
     }
 }
