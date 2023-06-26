@@ -15,9 +15,9 @@ class CreateReservationsTable extends Migration
     {
         Schema::create('reservations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('customer_id')->comment('顧客id');
-            $table->foreignId('treatment_type_id')->comment('施術タイプid');
-            $table->foreignId('sales_id')->comment('売上id');
+            $table->foreignId('customer_id')->default(0)->comment('顧客id');
+            $table->foreignId('treatment_type_id')->default(0)->comment('施術タイプid');
+            $table->foreignId('sales_id')->default(0)->comment('売上id');
             $table->datetime('start_time')->comment('開始時間');
             $table->boolean('reservable')->default(true)->comment('予約可能');
             $table->boolean('babysitting')->default(false)->comment('託児サービス');
