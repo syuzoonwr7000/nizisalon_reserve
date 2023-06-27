@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Gate;
+use App\Http\Controllers\CustomerReservationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -12,10 +14,8 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-Route::get('/', function () {
-    return view('welcome');
-});
+// 一般ユーザー用
+Route::get('', [CustomerReservationController::class, 'reserve'])->name('customers.reserve');
 
 Route::middleware([
     'auth:sanctum',
