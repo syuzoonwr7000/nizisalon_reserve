@@ -87,7 +87,7 @@
         <label for="treatment_type">施術タイプ</label>
         <select id="treatment_type" name="treatment_type">
             @foreach($treatment_types as $treatment_type)
-            <option value="{{ $treatment_type->id }}">{{ $treatment_type->type . ' ' . '(' . $treatment_type->frequency . '回)' . ' ' . $treatment_type->price . '円'}}</option>
+                <option value="{{ $treatment_type->id }}">{{ $treatment_type->type . ' ' . '(' . $treatment_type->frequency . '回)' . ' ' . $treatment_type->price . '円'}}</option>
             @endforeach
         </select>
         <label for="reservation_datetime">予約日時:</label>
@@ -96,170 +96,45 @@
                 <thead>
                     <tr>
                         <th></th>
-                        <th id="date-1"></th>
-                        <th id="date-2"></th>
-                        <th id="date-3"></th>
-                        <th id="date-4"></th>
-                        <th id="date-5"></th>
-                        <th id="date-6"></th>
+                        @for($i = 0; $i < 7; $i++)
+                            <th id="date-{{ $i + 1 }}">{{ $current_date->format('n/d') }}({{ $weekdays[$current_date->dayOfWeek] }})</th>
+                            @php
+                                $current_date->addDay();
+                            @endphp
+                        @endfor
                     </tr>
                 </thead>
                 <tbody>
+                @foreach($time_slots as $time)
                     <tr>
-                        <th>10:00</th>
-                        @foreach($weekdays as $index => $weekday)
-                        <td>
-                            @php
-                                $reservation_found = false;
-                                $target_date = date('Y-m-d', strtotime('+' . $index . ' days', strtotime($current_date)));
-                                $target_time = '10:00';
-                                $matching_reservations = $reservable_reservations->filter(function ($reservation) use ($target_date, $target_time) {
-                                    return $reservation->start_time->format('H:i') === $target_time && $reservation->start_time->format('Y-m-d') === $target_date;
-                                });
-                            @endphp
-
-                            @foreach($matching_reservations as $reservation)
+                        <th>{{ $time }}</th>
+                        @php
+                            $current_date->subDays(7);
+                        @endphp
+                        @for($i = 0; $i < 7; $i++)
+                            <td>
                                 @php
-                                    $reservation_found = true;
+                                    $target_date_time = $current_date->copy()->setTimeFromTimeString($time);
+                                    $matching_reservation = $reservable_reservations->first(function ($reservation) use ($target_date_time) {
+                                        return $reservation->start_time->eq($target_date_time);
+                                    });
                                 @endphp
-
-                                @if($reservation->reservable === 1)
-                                    {{ $reservation->id .'〇' }}
+                                @if($matching_reservation)
+                                    @if($matching_reservation->reservable)
+                                        {{$matching_reservation->id}}
+                                    @else
+                                        ×
+                                    @endif
                                 @else
-                                    {{ $reservation->id .'×' }}
+                                    -
                                 @endif
-                            @endforeach
-
-                            @if(!$reservation_found)
-                                -
-                            @endif
-                        </td>
-                        @endforeach
-                    </tr>
-                    <tr>
-                        <th>10:30</th>
-                        @foreach($weekdays as $index => $weekday)
-                        <td>
+                            </td>
                             @php
-                                $reservation_found = false;
-                                $target_date = date('Y-m-d', strtotime('+' . $index . ' days', strtotime($current_date)));
-                                $target_time = '10:30';
-                                $matching_reservations = $reservable_reservations->filter(function ($reservation) use ($target_date, $target_time) {
-                                    return $reservation->start_time->format('H:i') === $target_time && $reservation->start_time->format('Y-m-d') === $target_date;
-                                });
+                                $current_date->addDay();
                             @endphp
-
-                            @foreach($matching_reservations as $reservation)
-                                @php
-                                    $reservation_found = true;
-                                @endphp
-
-                                @if($reservation->reservable === 1)
-                                    {{ $reservation->id .'〇' }}
-                                @else
-                                    {{ $reservation->id .'×' }}
-                                @endif
-                            @endforeach
-
-                            @if(!$reservation_found)
-                                -
-                            @endif
-                        </td>
-                        @endforeach
+                        @endfor
                     </tr>
-                    <tr>
-                        <th>12:00</th>
-                        @foreach($weekdays as $index => $weekday)
-                        <td>
-                            @php
-                                $reservation_found = false;
-                                $target_date = date('Y-m-d', strtotime('+' . $index . ' days', strtotime($current_date)));
-                                $target_time = '12:00';
-                                $matching_reservations = $reservable_reservations->filter(function ($reservation) use ($target_date, $target_time) {
-                                    return $reservation->start_time->format('H:i') === $target_time && $reservation->start_time->format('Y-m-d') === $target_date;
-                                });
-                            @endphp
-
-                            @foreach($matching_reservations as $reservation)
-                                @php
-                                    $reservation_found = true;
-                                @endphp
-
-                                @if($reservation->reservable === 1)
-                                    {{ $reservation->id .'〇' }}
-                                @else
-                                    {{ $reservation->id .'×' }}
-                                @endif
-                            @endforeach
-
-                            @if(!$reservation_found)
-                                -
-                            @endif
-                        </td>
-                        @endforeach
-                    </tr>
-                    <tr>
-                        <th>12:30</th>
-                        @foreach($weekdays as $index => $weekday)
-                        <td>
-                            @php
-                                $reservation_found = false;
-                                $target_date = date('Y-m-d', strtotime('+' . $index . ' days', strtotime($current_date)));
-                                $target_time = '12:30';
-                                $matching_reservations = $reservable_reservations->filter(function ($reservation) use ($target_date, $target_time) {
-                                    return $reservation->start_time->format('H:i') === $target_time && $reservation->start_time->format('Y-m-d') === $target_date;
-                                });
-                            @endphp
-
-                            @foreach($matching_reservations as $reservation)
-                                @php
-                                    $reservation_found = true;
-                                @endphp
-
-                                @if($reservation->reservable === 1)
-                                    {{ $reservation->id .'〇' }}
-                                @else
-                                    {{ $reservation->id .'×' }}
-                                @endif
-                            @endforeach
-
-                            @if(!$reservation_found)
-                                -
-                            @endif
-                        </td>
-                        @endforeach
-                    </tr>
-                    <tr>
-                        <th>13:00</th>
-                        @foreach($weekdays as $index => $weekday)
-                        <td>
-                            @php
-                                $reservation_found = false;
-                                $target_date = date('Y-m-d', strtotime('+' . $index . ' days', strtotime($current_date)));
-                                $target_time = '13:00';
-                                $matching_reservations = $reservable_reservations->filter(function ($reservation) use ($target_date, $target_time) {
-                                    return $reservation->start_time->format('H:i') === $target_time && $reservation->start_time->format('Y-m-d') === $target_date;
-                                });
-                            @endphp
-
-                            @foreach($matching_reservations as $reservation)
-                                @php
-                                    $reservation_found = true;
-                                @endphp
-
-                                @if($reservation->reservable === 1)
-                                    {{ $reservation->id .'〇' }}
-                                @else
-                                    {{ $reservation->id .'×' }}
-                                @endif
-                            @endforeach
-
-                            @if(!$reservation_found)
-                                -
-                            @endif
-                        </td>
-                        @endforeach
-                    </tr>
+                @endforeach
                 </tbody>
             </table>
         </div>
@@ -271,42 +146,4 @@
     </form>
 </div>
 
-<script>
-    const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
-    const currentDate = new Date();
-    updateDates();
-
-    // 前の一週間を表示する関数
-    function previousWeek() {
-        currentDate.setDate(currentDate.getDate() - 7);
-        updateDates();
-    }
-
-    // 次の一週間を表示する関数
-    function nextWeek() {
-        currentDate.setDate(currentDate.getDate() + 7);
-        updateDates();
-    }
-
-    // 日付を更新する関数
-    function updateDates() {
-        const table = document.querySelector('.reservations-table');
-        const headerRow = table.querySelector('thead tr');
-
-        // 曜日の日付を更新する
-        for (let i = 1; i < headerRow.cells.length; i++) {
-            const cell = headerRow.cells[i];
-            const date = new Date(currentDate.getTime() + (i - 1) * 24 * 60 * 60 * 1000);
-            
-            // 日曜日の場合は次の月曜日の日付を取得
-            if (date.getDay() === 0) {
-                date.setDate(date.getDate() + 1);
-            }
-
-            const dayOfWeek = weekdays[date.getDay()];
-            const dateString = date.toLocaleDateString('ja-JP', { month: '2-digit', day: '2-digit' });
-            cell.textContent = `${dateString}(${dayOfWeek})`;
-            cell.id = `date-${i - 1}`;
-        }
-    }
-</script>
+<script></script>
